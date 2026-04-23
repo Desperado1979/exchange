@@ -1,0 +1,817 @@
+/* 第一性：卖/买 → 选币 → 金额 → DEAL */
+:root {
+  --g: #143a31;
+  --g2: #0b221c;
+  --gold: #f0c84a;
+  --m: #bfe4d8;
+  --card: #f0faf4;
+  --in: #07100e;
+  --ff: "DM Sans", system-ui, sans-serif;
+  --r: 12px;
+}
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+html,
+body {
+  height: 100%;
+}
+body.trade-app {
+  margin: 0;
+  font-family: var(--ff);
+  color: #fff;
+  color-scheme: dark; /* 原生 <select> 展开列表在 Chromium 上用深色，避免灰底+浅金字 */
+  background: radial-gradient(900px 600px at 20% 0, #1a4d3f, var(--g2));
+  height: 100dvh;
+  max-height: 100dvh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  font-size: clamp(18px, 0.4rem + 1.1vw, 25px);
+}
+.trade-hd {
+  padding: 0.45rem 0.6rem 0.3rem;
+  text-align: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+.trade-ttl {
+  margin: 0;
+  font-size: 1.1em;
+  font-weight: 800;
+  line-height: 1.2;
+  color: #e8f4ee;
+}
+.trade-brand {
+  margin: 0.1rem 0 0;
+  font-size: 0.7em;
+  font-weight: 600;
+  color: var(--m);
+  opacity: 0.95;
+}
+.ttabs {
+  display: flex;
+  max-width: min(100%, 42rem);
+  margin: 0 auto;
+  width: 100%;
+  padding: 0 0.35rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  gap: 0.2rem;
+}
+.ttab {
+  flex: 1;
+  min-width: 0;
+  font: inherit;
+  font-weight: 800;
+  font-size: 0.82em;
+  padding: 0.4rem 0.15rem;
+  line-height: 1.2;
+  background: rgba(0, 0, 0, 0.12);
+  color: #7a9a8a;
+  border: none;
+  border-bottom: 2px solid transparent;
+  border-radius: 6px 6px 0 0;
+  cursor: pointer;
+}
+.ttab.is-on {
+  color: var(--gold);
+  border-bottom-color: var(--gold);
+  background: rgba(0, 0, 0, 0.2);
+}
+.tmain {
+  flex: 1 1 auto;
+  min-height: 0;
+  max-width: min(100%, 42rem);
+  width: 100%;
+  margin: 0 auto;
+  padding: 0.4rem 0.55rem 0.5rem;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+body.trade-mode-log .tmain,
+body.trade-mode-log .ttabs,
+body.trade-mode-rates .tmain,
+body.trade-mode-rates .ttabs {
+  max-width: min(100%, 58rem);
+}
+.tpan {
+  min-height: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.tpan.is-hid {
+  display: none;
+}
+.sheet {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 0 0 0.15rem;
+}
+.sheet--calc,
+.sheet--rates {
+  overflow: hidden;
+}
+.bghost {
+  font: inherit;
+  font-size: 0.86em;
+  font-weight: 700;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 5px;
+  padding: 0.35rem 0.5rem;
+  cursor: pointer;
+  margin: 0.15rem 0 0;
+}
+.bghost:hover {
+  background: rgba(0, 0, 0, 0.3);
+}
+.bghost.sm {
+  width: 100%;
+  font-size: 0.64rem;
+  margin-top: 0.2rem;
+}
+/* 主问题 */
+.q {
+  margin: 0 0 0.1rem;
+  font-size: 0.92em;
+  font-weight: 700;
+  color: #d8f0e6;
+}
+.q2 {
+  margin: 0 0 0.4rem;
+  font-size: 0.9em;
+  font-weight: 600;
+  color: #8ebfb0;
+  line-height: 1.25;
+}
+/* 两个大格 */
+.segs {
+  display: flex;
+  gap: 0.3rem;
+  margin-bottom: 0.4rem;
+}
+.seg {
+  flex: 1 1 48%;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 0.25rem;
+  padding: 0.35rem 0.3rem;
+  background: var(--g);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  cursor: pointer;
+  min-width: 0;
+}
+.seg:has(:checked) {
+  border-color: var(--gold);
+  background: rgba(240, 200, 74, 0.1);
+}
+.seg input {
+  margin-top: 0.1rem;
+  width: 0.95em;
+  height: 0.95em;
+  flex-shrink: 0;
+  accent-color: #f0c84a;
+}
+.szh {
+  display: block;
+  font-size: 0.9em;
+  font-weight: 600;
+  line-height: 1.2;
+  color: #f0faf2;
+}
+.sen {
+  display: block;
+  font-size: 0.9em;
+  font-weight: 600;
+  line-height: 1.2;
+  color: #b0d4c4;
+  margin-top: 0.12rem;
+}
+.fld {
+  margin-bottom: 0.4rem;
+}
+.fld-ccyrow .ccyrow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.45rem;
+  align-items: stretch;
+}
+.ccyrow-cell {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  justify-content: flex-end;
+}
+.fl-bi {
+  margin: 0 0 0.2rem;
+  font-size: 0.86em;
+  font-weight: 600;
+  line-height: 1.25;
+  color: #c8e8dc;
+  letter-spacing: 0.02em;
+}
+.ccyrow-cell--rate .fl-bi {
+  text-align: right;
+}
+.tinp--inline-rate {
+  text-align: right;
+  color: var(--gold);
+}
+.fstatus {
+  margin: 0.2rem 0 0;
+  font-size: 0.68em;
+  font-weight: 600;
+  line-height: 1.2;
+  min-height: 0.9rem;
+}
+/* 全局牌价表（「汇率」标签内） */
+.sheet--rates .global-rates,
+#panelRates .global-rates {
+  margin-top: 0;
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 0.4rem 0.45rem 0.5rem;
+  background: linear-gradient(165deg, #143a32, #0c221c);
+  border: 1px solid rgba(240, 200, 74, 0.28);
+  border-radius: var(--r);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
+}
+.gr-ttl {
+  margin: 0 0 0.2rem;
+  font-size: 0.95em;
+  font-weight: 800;
+  line-height: 1.2;
+  color: #e8f4ee;
+}
+.gr-hint {
+  margin: 0 0 0.35rem;
+  font-size: 0.72em;
+  font-weight: 600;
+  line-height: 1.3;
+  color: #7eb3a0;
+  flex: 0 0 auto;
+}
+.gr-hint:empty {
+  display: none;
+  margin: 0;
+}
+.gr-wrap {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+  margin: 0;
+}
+.gr-tbl {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88em;
+  font-weight: 600;
+}
+.gr-tbl th,
+.gr-tbl td {
+  padding: 0.32rem 0.28rem;
+  text-align: left;
+  vertical-align: middle;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+.gr-tbl th {
+  color: #b8e0d0;
+  font-weight: 600;
+  font-size: 0.9em;
+  white-space: nowrap;
+}
+.gr-tbl .gr-code {
+  font-weight: 800;
+  color: var(--gold);
+  width: 3.2rem;
+}
+.gr-tbl .gr-inp {
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+  font-size: 1em;
+  font-weight: 700;
+  padding: 0.38rem 0.35rem;
+  border-radius: 5px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.25);
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+}
+.gr-save {
+  width: 100%;
+  margin-top: 0.35rem;
+  font-size: 0.88em;
+  font-weight: 700;
+  padding: 0.4rem 0.5rem;
+  flex: 0 0 auto;
+}
+.sheet--calc {
+  justify-content: flex-start;
+}
+.sheet--calc .bdeal {
+  margin-top: 0.1rem;
+  flex: 0 0 auto;
+}
+.sheet--calc .sum {
+  flex: 0 0 auto;
+}
+.sheet--calc .fld,
+.sheet--calc .q2 {
+  flex: 0 0 auto;
+}
+.sheet--calc .segs {
+  flex: 0 0 auto;
+}
+.fstatus--ok {
+  color: #7eb3a0;
+}
+.fstatus--err {
+  color: #f0a0a0;
+}
+.fld .fl,
+.fld .fle {
+  display: block;
+  font-size: 0.86em;
+  font-weight: 600;
+  line-height: 1.2;
+  color: #bfe4d8;
+  margin-bottom: 0.08rem;
+}
+.sels {
+  width: 100%;
+  font: inherit;
+  font-size: 0.88rem;
+  font-weight: 700;
+  padding: 0.35rem 0.4rem;
+  border-radius: 5px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.45);
+  color: #ffeaa3;
+  color-scheme: dark;
+}
+.sels option {
+  background: #0d2220;
+  color: #fff8e0;
+  font: inherit;
+  font-weight: 600;
+  padding: 0.4em 0.5em;
+}
+.sels option:hover,
+.sels option:focus,
+.sels option:active {
+  background: #1f4d3f;
+  color: #fff;
+}
+.sels option:checked {
+  background: #1a3d32;
+  color: var(--gold);
+}
+.sels.ccy-ctl,
+.tinp.tinp--inline-rate.ccy-ctl {
+  box-sizing: border-box;
+  min-height: 3.15rem;
+  width: 100%;
+  font-size: 1.02em;
+  font-weight: 700;
+  padding: 0.5rem 0.45rem;
+  line-height: 1.2;
+  border-radius: 6px;
+}
+.amt2 {
+  display: flex;
+  gap: 0.2rem;
+}
+.tinp {
+  flex: 1;
+  min-width: 0;
+  font: inherit;
+  font-size: 1.12em;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  padding: 0.5rem 0.55rem;
+  min-height: 3.15rem;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.25);
+  color: #fff;
+}
+/* 摘要：本店应收 / 本店应付 + 中英 */
+.sum.sum--pay {
+  background: linear-gradient(160deg, #0f2f29 0%, #0a1f1b 50%, #0c2622 100%);
+  color: #e8f4ee;
+  border: 1px solid rgba(240, 200, 74, 0.2);
+  border-radius: 11px;
+  padding: 0.5rem 0.55rem 0.55rem;
+  margin: 0.28rem 0 0.4rem;
+  font-size: 0.9em;
+  font-weight: 600;
+  box-shadow: 0 0.2rem 0.85rem rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+.sum-pay {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  line-height: 1.3;
+}
+.sum-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.35rem 0.5rem;
+  padding-top: 0.28rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+.sum-line:first-of-type {
+  border-top: none;
+  padding-top: 0;
+}
+.sum--pay .sum-pay__lbl {
+  flex: 0 1 55%;
+  min-width: 0;
+}
+.sum--pay .sum-pay__lbl .szh {
+  font-size: 0.84em;
+  font-weight: 700;
+  color: #d4efe4;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+  font-family: var(--ff);
+}
+.sum--pay .sum-pay__lbl .sen {
+  font-size: 0.75em;
+  font-weight: 600;
+  color: #8eb9a8;
+  margin-top: 0.1rem;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+  font-family: var(--ff);
+  letter-spacing: 0.02em;
+}
+.sum-pay__val {
+  margin: 0;
+  font-size: 1.1em;
+  font-weight: 800;
+  color: #ffefd2;
+  font-feature-settings: "tnum" 1;
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 0.04em 0.12em rgba(0, 0, 0, 0.35);
+  font-family: var(--ff);
+  word-break: break-all;
+}
+/* DEAL */
+.bdeal {
+  width: 100%;
+  font: inherit;
+  font-size: 1.12em;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  padding: 0.6rem 0.65rem;
+  min-height: 3.1rem;
+  border: 1px solid #c9a224;
+  border-radius: 8px;
+  color: #1a1303;
+  background: linear-gradient(180deg, #f6e08a, #d4a62a);
+  cursor: pointer;
+  margin-top: 0.1rem;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.3) inset;
+}
+.bdeal:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+/* 历史 */
+.logbox {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  flex: 1;
+  overflow: hidden;
+}
+.h2 {
+  margin: 0.1rem 0 0.1rem;
+  font-size: 0.9rem;
+  color: #e0f0e8;
+  font-weight: 800;
+}
+.frow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.2rem 0.3rem;
+  font-size: 0.7rem;
+  color: #d0ede4;
+  margin-bottom: 0.2rem;
+}
+.frb {
+  display: flex;
+  align-items: center;
+  gap: 0.15rem;
+  cursor: pointer;
+  font-size: 0.68rem;
+  font-weight: 600;
+}
+.frb input {
+  accent-color: #f0c84a;
+}
+.flb-col {
+  align-items: flex-start;
+}
+.fl-stk {
+  display: flex;
+  flex-direction: column;
+  gap: 0.06rem;
+  min-width: 0;
+}
+.fl-zh {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #eaf6f0;
+  line-height: 1.15;
+}
+.fl-en {
+  font-size: 0.58rem;
+  font-weight: 600;
+  color: #8eb9a8;
+  line-height: 1.15;
+}
+.flt-sub {
+  margin: 0 0 0.32rem;
+  font-size: 0.58rem;
+  line-height: 1.35;
+  color: #7a9a8a;
+  max-width: 42rem;
+}
+.dinp {
+  font: inherit;
+  font-size: 0.7rem;
+  max-width: 7.2rem;
+  border-radius: 3px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 0.1rem 0.2rem;
+  background: rgba(0, 0, 0, 0.2);
+  color: #fff;
+}
+.dwrap[hidden] {
+  display: none !important;
+}
+.lscroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  background: #f6fcf8;
+}
+.tlog {
+  width: 100%;
+  font-size: 0.7rem;
+  color: #07100e;
+  border-collapse: collapse;
+  background: #fafffa;
+}
+.tlog th,
+.tlog td {
+  text-align: left;
+  padding: 0.25rem 0.2rem;
+  border-bottom: 1px solid #c8d4cd;
+  vertical-align: top;
+}
+.tlog th {
+  position: sticky;
+  top: 0;
+  background: #1a3d32;
+  color: #d8f0e6;
+  z-index: 1;
+  font-size: 0.58rem;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  font-weight: 800;
+}
+.tlog tr:last-child td {
+  border-bottom: 0;
+}
+.tlog .m {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  font-size: 0.66rem;
+}
+.tlog .pbtn {
+  font-size: 0.74rem;
+  padding: 0.14rem 0.42rem;
+  font-weight: 800;
+  border-radius: 5px;
+  cursor: pointer;
+  background: linear-gradient(180deg, #1f5c4a, #143a31);
+  color: #fff8e0;
+  border: 1px solid rgba(240, 200, 74, 0.35);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+}
+.tlog .pbtn:active {
+  transform: translateY(1px);
+}
+.tlog .dbtn {
+  font-size: 0.72rem;
+  padding: 0.14rem 0.38rem;
+  font-weight: 800;
+  border-radius: 5px;
+  cursor: pointer;
+  background: linear-gradient(180deg, #6a3028, #4a2018);
+  color: #ffeae6;
+  border: 1px solid rgba(255, 160, 140, 0.45);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+}
+.tlog .dbtn:active {
+  transform: translateY(1px);
+}
+.log-below {
+  flex: 0 0 auto;
+  margin-top: 0.35rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  width: 100%;
+  max-width: min(100%, 58rem);
+  box-sizing: border-box;
+  align-self: stretch;
+}
+.log-sec-ttl {
+  margin: 0;
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: #d4efe4;
+  letter-spacing: 0.02em;
+}
+.log-sec-ttl--sub {
+  margin-top: 0.1rem;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #b0dcc8;
+}
+.lscroll--sum {
+  flex: 0 0 auto;
+  min-height: 0;
+  max-height: 16rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+.log-tool {
+  flex: 0 0 auto;
+  margin-top: 0.2rem;
+  width: 100%;
+  max-width: min(100%, 58rem);
+  box-sizing: border-box;
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+.log-tool--log {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: 0.3rem 0.35rem;
+}
+.log-tool--sum {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: 0.3rem 0.35rem;
+}
+.log-tool--log .btn-csv,
+.log-tool--log .btn-logclr {
+  flex: 1 1 42%;
+  min-width: 0;
+  width: auto;
+  box-sizing: border-box;
+  padding: 0.48rem 0.45rem;
+  font-size: 0.74rem;
+  font-weight: 800;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.log-tool--sum .btn-csv {
+  flex: 1 1 100%;
+  min-width: 0;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.48rem 0.45rem;
+  font-size: 0.74rem;
+  font-weight: 800;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.brd {
+  font: inherit;
+  font-size: 0.68rem;
+  font-weight: 800;
+  padding: 0.2rem 0.35rem;
+  color: #ffc9c0;
+  border: 1px solid rgba(200, 80, 60, 0.5);
+  background: rgba(100, 20, 10, 0.35);
+  border-radius: 4px;
+  cursor: pointer;
+}
+.em {
+  text-align: center;
+  color: #8fb3a0;
+  font-size: 0.72rem;
+  padding: 0.3rem 0.2rem;
+  margin: 0;
+}
+/* 弹层 */
+.mod {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: grid;
+  place-items: center;
+  background: rgba(0, 0, 0, 0.45);
+}
+.mod[hidden] {
+  display: none !important;
+}
+.modb {
+  position: absolute;
+  inset: 0;
+}
+.modc {
+  position: relative;
+  background: #0f2e26;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  padding: 0.6rem 0.75rem 0.5rem;
+  max-width: 20rem;
+  width: 92%;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+  text-align: center;
+}
+.mqt {
+  margin: 0 0 0.45rem;
+  color: #e0f0e8;
+  font-size: 0.88rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+.mrow {
+  display: flex;
+  justify-content: center;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+}
+.bpri {
+  font: inherit;
+  font-weight: 800;
+  font-size: 0.85rem;
+  padding: 0.3rem 0.55rem;
+  border-radius: 6px;
+  border: 1px solid #b89220;
+  background: linear-gradient(180deg, #f6e08a, #d4a62a);
+  color: #1a1303;
+  cursor: pointer;
+}
+/* 页脚 */
+.tfut {
+  text-align: center;
+  font-size: 0.72em;
+  font-weight: 600;
+  padding: 0.25rem 0.3rem 0.4rem;
+  flex: 0 0 auto;
+}
+.a,
+.tfut-link {
+  color: #b0ddd0;
+  text-decoration: none;
+  font-size: 1em;
+  font-weight: 600;
+}
+a.a:hover,
+a.tfut-link:hover {
+  text-decoration: underline;
+  color: #fff;
+}
+
+@media (min-width: 32rem) {
+  .tmain,
+  .ttabs {
+    max-width: min(100%, 44rem);
+  }
+  body.trade-mode-log .tmain,
+  body.trade-mode-log .ttabs,
+  body.trade-mode-rates .tmain,
+  body.trade-mode-rates .ttabs {
+    max-width: min(100%, 60rem);
+  }
+}

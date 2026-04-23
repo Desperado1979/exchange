@@ -1,0 +1,43 @@
+{
+  "brand": {
+    "en": "NO. 1 HOLDINGS",
+    "zh": "NO. 1 HOLDINGS"
+  },
+  "subtitle": {
+    "en": "MONEY EXCHANGE",
+    "zh": "MONEY EXCHANGE"
+  },
+  "phone": "1234567",
+  "highlight": "USD",
+  "baseCurrency": "VUV",
+  "currencies": [
+    {
+      "code": "USD",
+      "nameEn": "US Dollar",
+      "nameZh": "US Dollar",
+      "weBuyVatu": 106,
+      "weSellVatu": 120
+    },
+    {
+      "code": "AUD",
+      "nameEn": "Australian Dollar",
+      "nameZh": "Australian Dollar",
+      "weBuyVatu": 80.5,
+      "weSellVatu": 86
+    },
+    {
+      "code": "NZD",
+      "nameEn": "New Zealand Dollar",
+      "nameZh": "New Zealand Dollar",
+      "weBuyVatu": 71,
+      "weSellVatu": 78
+    },
+    {
+      "code": "XPF",
+      "nameEn": "CFP Franc (Pacific)",
+      "nameZh": "CFP Franc (Pacific)",
+      "weBuyVatu": 1.03,
+      "weSellVatu": 1.08
+    }
+  ]
+}

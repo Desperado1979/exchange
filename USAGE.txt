@@ -1,0 +1,36 @@
+============================================
+  Rate board (web) - quick start
+============================================
+
+[1] How do I open the board?
+  1. Open this project folder
+  2. Double-click the launcher .bat in the web folder (or open index.html in a browser)
+  3. The browser may open after a second or two
+  4. UI is English; edit copy in tools/build_boot.py if you need to change it.
+
+  If Python is not installed, double-clicking index.html still works to view the board;
+  to change data/rates.json reliably, use the .bat launcher (starts a small local
+  server), then edit and press F5 to refresh.
+
+[2] Change shop name, phone, highlight currency?
+  Edit: data\rates.json in a text editor
+  - highlight: which code shows in the main hero, e.g. USD
+  - phone, brand, subtitle: change as needed, save, F5 in the browser
+
+[3] What are weBuyVatu / weSellVatu?
+  - weBuyVatu: VUV the shop pays for 1 unit of foreign (customer sells FX to you)
+  - weSellVatu: VUV the customer pays for 1 unit of foreign (you sell FX)
+    The UI may also show 1/this as an inverse for convenience
+
+[4] The list auto-rotates; each row pauses a few seconds. The top hero follows the
+  current line. The footer may scroll. Reduced-motion users get no list rotation
+
+[5] Garbled text?
+  - Use UTF-8 when saving data/rates.json and this help file
+
+(Data source of truth: data/rates.json; this file is general guidance)
+
+[6] Change on-screen button labels and strings?
+  Edit I18N in tools\build_boot.py, then from the web folder run:
+    python tools\build_boot.py
+  This regenerates js\boot-data.js and this USAGE file so the app stays in sync

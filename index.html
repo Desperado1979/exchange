@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en" class="view-signage-root">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>NO. 1 HOLDINGS - Rate board</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,600;0,9..40,700;1,9..40,600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/main.css" />
+  </head>
+  <body class="view-signage">
+    <a class="skip" href="#board">Skip to rates</a>
+
+    <header class="site-header" role="banner">
+      <div class="header-bar">
+        <div class="header-block" id="headerBlock">...</div>
+        <div class="header-bar__tools">
+          <button type="button" class="fs-btn" id="btnBoardFs" aria-pressed="false" lang="en">
+            Full screen
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main class="board" id="board">
+      <section class="hero" id="heroSection" aria-label="Current pair rates">
+        <div class="hero-panels">
+          <div class="hero-card hero-card--buy">
+            <div class="hero-card-inner" aria-label="Buy rate block">
+              <div class="hero-focal">
+                <div class="hero-text">
+                  <div class="hero-pair" id="mainBuyLabel" aria-label="Pair buy"></div>
+                </div>
+                <div class="hero-nums" id="mainBuyNumWrap">
+                  <p class="hero-figure hero-figure--single" id="mainBuyNum"></p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="hero-card hero-card--sell">
+            <div class="hero-card-inner" aria-label="Sell rate block">
+              <div class="hero-focal">
+                <div class="hero-text">
+                  <div class="hero-pair" id="mainSellLabel" aria-label="Pair sell"></div>
+                </div>
+                <div class="hero-nums" id="mainSellNumWrap">
+                  <p class="hero-figure hero-figure--single hero-figure--frac" id="mainSellNum"></p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="list-wrap" aria-labelledby="listTitle">
+        <h2 class="list-title" id="listTitle">...</h2>
+        <div class="list-shell">
+          <div class="list-view" id="listView">
+            <div class="table-rail">
+              <table class="rate-table">
+                <thead>
+                  <tr>
+                    <th id="thPair">...</th>
+                    <th id="thBuy">...</th>
+                    <th id="thSell">...</th>
+                  </tr>
+                </thead>
+                <tbody id="rateBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer" role="contentinfo">
+      <div class="footer-text" id="footerText">...</div>
+      <a class="footer-to-trade" id="linkToTrade" href="trade.html">Open trade</a>
+    </footer>
+
+    <script src="js/boot-data.js"></script>
+    <script src="js/app.js" defer></script>
+  </body>
+</html>

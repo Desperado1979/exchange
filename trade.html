@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FX / Trade - NO. 1 HOLDINGS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,600;0,9..40,700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/trade.css" />
+  </head>
+  <body class="trade-app me2-locale-en">
+    <header class="trade-hd">
+      <h1 class="trade-ttl" id="tradePageTitle"></h1>
+      <p class="trade-brand" id="tradeHeader"></p>
+    </header>
+
+    <nav class="ttabs" role="tablist" aria-label="page">
+      <button type="button" class="ttab is-on" id="tabCalc" role="tab" aria-selected="true" aria-controls="panelCalc">
+        <span id="tTabX"></span>
+      </button>
+      <button type="button" class="ttab" id="tabRates" role="tab" aria-selected="false" aria-controls="panelRates">
+        <span id="tTabR"></span>
+      </button>
+      <button type="button" class="ttab" id="tabLog" role="tab" aria-selected="false" aria-controls="panelLog">
+        <span id="tTabH"></span>
+      </button>
+    </nav>
+
+    <main class="tmain">
+      <div class="tpan is-on" id="panelCalc" role="tabpanel" aria-labelledby="tabCalc" data-p="x">
+        <div class="sheet sheet--calc" id="sheetDeal">
+          <p class="q" id="lblWhat"></p>
+          <p class="q2" id="lblWhatE" hidden></p>
+            <div class="segs" role="radiogroup" aria-label="side">
+            <label class="seg" data-side="buy"
+              ><input type="radio" name="trDir" id="dirBuy" value="buy" checked />
+              <span class="szh" id="sBuyZ"></span><span class="sen" id="sBuyE" hidden></span>
+            </label>
+            <label class="seg" data-side="sell"
+              ><input type="radio" name="trDir" id="dirSell" value="sell" />
+              <span class="szh" id="sSellZ"></span><span class="sen" id="sSellE" hidden></span>
+            </label>
+          </div>
+
+          <div class="fld fld-ccyrow">
+            <div class="ccyrow">
+              <div class="ccyrow-cell ccyrow-cell--sel">
+                <p class="fl-bi" id="lblCcyPair"></p>
+                <select id="tradeCcy" class="sels ccy-ctl"></select>
+              </div>
+              <div class="ccyrow-cell ccyrow-cell--rate">
+                <p class="fl-bi" id="lblRateInline"></p>
+                <input
+                  type="text"
+                  class="tinp tinp--inline-rate ccy-ctl"
+                  id="inlineRate"
+                  inputmode="decimal"
+                  autocomplete="off"
+                />
+              </div>
+            </div>
+            <p class="fstatus" id="inlineRateStatus" hidden></p>
+          </div>
+
+          <div class="fld">
+            <p class="fl-bi" id="lblAmtPair"></p>
+            <div class="amt2">
+              <input type="text" class="tinp" id="amt" inputmode="decimal" autocomplete="off" />
+              <button type="button" class="bghost" id="btnClear"></button>
+            </div>
+          </div>
+
+          <div class="sum sum--pay" id="resultBlock" aria-live="polite">
+            <div class="sum-pay">
+              <div class="sum-line">
+                <div class="sum-pay__lbl">
+                  <span class="szh" id="lblShopRecvZ"></span>
+                  <span class="sen" id="lblShopRecvE" hidden></span>
+                </div>
+                <b class="sum-pay__val" id="legRecvVal">—</b>
+              </div>
+              <div class="sum-line">
+                <div class="sum-pay__lbl">
+                  <span class="szh" id="lblShopPayZ"></span>
+                  <span class="sen" id="lblShopPayE" hidden></span>
+                </div>
+                <b class="sum-pay__val" id="legPayVal">—</b>
+              </div>
+            </div>
+          </div>
+
+          <button type="button" class="bdeal" id="btnDeal" disabled>DEAL</button>
+        </div>
+      </div>
+
+      <div class="tpan is-hid" id="panelRates" role="tabpanel" aria-labelledby="tabRates" data-p="r" hidden>
+        <div class="sheet sheet--rates" id="sheetRates">
+          <section class="global-rates" id="globalRatesBlock" aria-labelledby="globalRatesTtl">
+            <h2 class="gr-ttl" id="globalRatesTtl"></h2>
+            <p class="gr-hint" id="globalRatesHint"></p>
+            <div class="fld">
+              <p class="fl-bi" id="lblShopPhone"></p>
+              <div class="amt2">
+                <input
+                  type="text"
+                  class="tinp"
+                  id="shopPhone"
+                  inputmode="tel"
+                  autocomplete="off"
+                />
+              </div>
+            </div>
+            <div class="gr-wrap">
+              <table class="gr-tbl" id="globalRatesTable">
+                <thead>
+                  <tr>
+                    <th id="thGlobalCcy"></th>
+                    <th id="thGlobalBuy"></th>
+                    <th id="thGlobalSell"></th>
+                  </tr>
+                </thead>
+                <tbody id="globalRatesTbody"></tbody>
+              </table>
+            </div>
+            <p class="fstatus" id="globalRateStatus" hidden></p>
+            <button type="button" class="bghost gr-save" id="btnSaveGlobalRates"></button>
+          </section>
+        </div>
+      </div>
+
+      <div class="tpan is-hid" id="panelLog" role="tabpanel" aria-labelledby="tabLog" hidden data-p="h">
+        <div class="logbox">
+          <h2 class="h2" id="logH"></h2>
+          <div class="frow">
+            <label class="frb flb-col"
+              ><input type="radio" name="fMode" id="fOne" value="one" checked />
+              <span class="fl-stk"><span class="fl-zh" id="fOneLZh"></span><span class="fl-en" id="fOneLEn" hidden></span></span></label>
+            <span class="dwrap" id="fBlockOne">
+              <input type="date" class="dinp" id="fDateOne" aria-describedby="logFilterDateNote" />
+            </span>
+            <label class="frb flb-col"
+              ><input type="radio" name="fMode" id="fRange" value="range" />
+              <span class="fl-stk"><span class="fl-zh" id="fRangeLZh"></span><span class="fl-en" id="fRangeLEn" hidden></span></span></label>
+            <span class="dwrap" id="fBlockRange" hidden>
+              <input type="date" class="dinp" id="fDateFrom" aria-describedby="logFilterDateNote" />
+              <span>—</span>
+              <input type="date" class="dinp" id="fDateTo" aria-describedby="logFilterDateNote" />
+            </span>
+          </div>
+          <p class="flt-sub" id="logFilterDateNote"></p>
+          <div class="lscroll">
+            <table class="tlog" id="logTable">
+              <thead>
+                <tr>
+                  <th id="thLTime"></th>
+                  <th id="thLDir"></th>
+                  <th id="thLCcy"></th>
+                  <th id="thLIn"></th>
+                  <th id="thLOut"></th>
+                  <th id="thLDel"></th>
+                  <th id="thPrint"></th>
+                </tr>
+              </thead>
+              <tbody id="logTbody"></tbody>
+            </table>
+            <p class="em" id="logEmpty"></p>
+          </div>
+          <div class="log-tool log-tool--log" id="logToolLog">
+            <button type="button" class="bghost btn-csv" id="btnCsvLog"></button>
+            <button type="button" class="brd btn-logclr" id="btnLogClear"></button>
+          </div>
+          <div class="log-below" id="logBelowBlock">
+            <p class="log-sec-ttl" id="logSumTableCap"></p>
+            <div class="lscroll lscroll--sum">
+              <table class="tlog" id="logSumTable">
+                <thead>
+                  <tr>
+                    <th id="thSumCcy"></th>
+                    <th id="thSumCount"></th>
+                    <th id="thSumNet"></th>
+                    <th id="thSumNf"></th>
+                  </tr>
+                </thead>
+                <tbody id="logSumTbody"></tbody>
+              </table>
+            </div>
+            <div class="log-tool log-tool--sum" id="logToolSum">
+              <button type="button" class="bghost btn-csv" id="btnCsvSummary"></button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <div
+      class="mod"
+      id="printModal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="mQ"
+      hidden
+    >
+      <div class="modb" data-close=""></div>
+      <div class="modc">
+        <p class="mqt" id="mQ"></p>
+        <div class="mrow">
+          <button type="button" class="bghost" id="mNo"></button>
+          <button type="button" class="bpri" id="mYes"></button>
+        </div>
+      </div>
+    </div>
+
+    <footer class="tfut">
+      <a href="index.html" class="a tfut-link" id="linkToBoard"></a>
+    </footer>
+
+    <script src="js/boot-data.js"></script>
+    <script src="js/trade.js" defer></script>
+  </body>
+</html>
