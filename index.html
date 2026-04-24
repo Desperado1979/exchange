@@ -17,7 +17,12 @@
 
     <header class="site-header" role="banner">
       <div class="header-bar">
-        <div class="header-block" id="headerBlock">...</div>
+        <div class="header-bar__tools header-bar__tools--left">
+          <a class="fs-btn" href="trade.html" id="linkToTrade">Open trade</a>
+        </div>
+        <div class="header-block" id="headerBlock">
+          <div id="listTitle" class="list-title--site"></div>
+        </div>
         <div class="header-bar__tools">
           <button type="button" class="fs-btn" id="btnBoardFs" aria-pressed="false" lang="en">
             Full screen
@@ -26,7 +31,7 @@
       </div>
     </header>
 
-    <main class="board" id="board">
+    <main class="board" id="board" aria-label="Current pair rates and full table">
       <section class="hero" id="heroSection" aria-label="Current pair rates">
         <div class="hero-panels">
           <div class="hero-card hero-card--buy">
@@ -57,18 +62,33 @@
       </section>
 
       <section class="list-wrap" aria-labelledby="listTitle">
-        <h2 class="list-title" id="listTitle">...</h2>
+        <div class="list-table-head" id="listTableHead">
+          <div class="table-rail table-rail--head">
+            <table class="rate-table rate-table--head" role="table">
+              <colgroup>
+                <col class="rt-col-pair" />
+                <col class="rt-col-buy" />
+                <col class="rt-col-sell" />
+              </colgroup>
+              <thead>
+                <tr>
+                  <th id="thPair">…</th>
+                  <th id="thBuy">…</th>
+                  <th id="thSell">…</th>
+                </tr>
+              </thead>
+            </table>
+          </div>
+        </div>
         <div class="list-shell">
           <div class="list-view" id="listView">
-            <div class="table-rail">
-              <table class="rate-table">
-                <thead>
-                  <tr>
-                    <th id="thPair">...</th>
-                    <th id="thBuy">...</th>
-                    <th id="thSell">...</th>
-                  </tr>
-                </thead>
+            <div class="table-rail table-rail--body">
+              <table class="rate-table rate-table--body" role="table" aria-label="All currency rows">
+                <colgroup>
+                  <col class="rt-col-pair" />
+                  <col class="rt-col-buy" />
+                  <col class="rt-col-sell" />
+                </colgroup>
                 <tbody id="rateBody"></tbody>
               </table>
             </div>
@@ -79,7 +99,6 @@
 
     <footer class="site-footer" role="contentinfo">
       <div class="footer-text" id="footerText">...</div>
-      <a class="footer-to-trade" id="linkToTrade" href="trade.html">Open trade</a>
     </footer>
 
     <script src="js/boot-data.js"></script>

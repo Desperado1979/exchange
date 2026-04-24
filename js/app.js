@@ -110,8 +110,19 @@ function onBoardFsClick() {
   }
 }
 
+function me2SyncSignageLayoutClass() {
+  var root = document.documentElement;
+  if (!root || !root.classList.contains("view-signage-root")) return;
+  if (me2IsFullscreen()) {
+    root.classList.add("me2-signage-fullscreen");
+  } else {
+    root.classList.remove("me2-signage-fullscreen");
+  }
+}
+
 function onBoardFsChange() {
   var t = getT();
+  me2SyncSignageLayoutClass();
   if (t) me2UpdateBoardFsButton(t);
 }
 
@@ -165,12 +176,10 @@ function startPairRotation(data, t, list) {
 
   listView.classList.remove("list-view--static");
 
+  /* Always rotate through pairs so TV boards behave the same for every customer.
+     If the user prefers reduced motion, we only skip smooth scrolling — not the rotation. */
   var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   var FOCUS_MS = 5000;
-
-  if (reduced) {
-    listView.classList.add("list-view--static");
-  }
 
   var h = data && data.highlight != null ? String(data.highlight) : "";
   var startIdx = 0;
@@ -192,11 +201,6 @@ function startPairRotation(data, t, list) {
     }
   }
 
-  if (reduced) {
-    focusIndex(startIdx);
-    return;
-  }
-
   var i = startIdx;
   focusIndex(i);
   ME2_ROTATE_TIMER = window.setInterval(function () {
@@ -208,8 +212,13 @@ function startPairRotation(data, t, list) {
 function render(data) {
   var t = getT();
   if (!t) {
-    var el = document.getElementById("headerBlock");
-    if (el) el.textContent = "Load boot-data.js (run build_boot.py) first";
+    var le = document.getElementById("listTitle");
+    if (le) {
+      le.textContent = "Load boot-data.js (run build_boot.py) first";
+    } else {
+      var hb = document.getElementById("headerBlock");
+      if (hb) hb.textContent = "Load boot-data.js (run build_boot.py) first";
+    }
     return;
   }
   me2UpdateBoardFsButton(t);
@@ -218,14 +227,20 @@ function render(data) {
   var sub = (data.subtitle && (data.subtitle.en || data.subtitle.zh)) || "";
   var phone = data.phone;
 
-  var line = fmt(t.brandLineFmt, { brand: brand, sub: sub });
-  document.getElementById("headerBlock").innerHTML = enLine(line);
+  var listTitle = document.getElementById("listTitle");
+  if (listTitle) {
+    listTitle.innerHTML = enLine(t.listTitle);
+  }
 
   var foot = fmt(t.footerLineFmt, { brand: brand, sub: sub, phone: phone });
   document.getElementById("footerText").innerHTML =
     '<div class="dual dual--en" lang="en"><div class="d-en">' + esc(foot) + "</div></div>";
   var ltr = document.getElementById("linkToTrade");
   if (ltr) ltr.textContent = t.boardToTrade || "Open trade";
+
+  document.getElementById("thPair").innerHTML = enLine(t.thCcy);
+  document.getElementById("thBuy").innerHTML = enLine(t.weBuy);
+  document.getElementById("thSell").innerHTML = enLine(t.weSell);
 
   var list = data.currencies || [];
 
@@ -267,17 +282,12 @@ function render(data) {
     tbody.appendChild(tr);
   }
 
-  document.getElementById("listTitle").innerHTML = enLine(t.listTitle);
-
-  document.getElementById("thPair").innerHTML = enLine(t.thCcy);
-  document.getElementById("thBuy").innerHTML = enLine(t.weBuy);
-  document.getElementById("thSell").innerHTML = enLine(t.weSell);
-
   startPairRotation(data, t, list);
 }
 
 function main() {
   if (!getT()) return;
+  me2SyncSignageLayoutClass();
   var bfs = document.getElementById("btnBoardFs");
   if (bfs) bfs.addEventListener("click", onBoardFsClick);
   document.addEventListener("fullscreenchange", onBoardFsChange);

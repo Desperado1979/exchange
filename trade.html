@@ -93,7 +93,10 @@
             </div>
           </div>
 
-          <button type="button" class="bdeal" id="btnDeal" disabled>DEAL</button>
+          <div class="deal-row">
+            <button type="button" class="bdeal" id="btnDeal" disabled>DEAL</button>
+            <button type="button" class="bprint-last" id="btnPrintLast" disabled>Print</button>
+          </div>
         </div>
       </div>
 
@@ -171,6 +174,7 @@
           </div>
           <div class="log-tool log-tool--log" id="logToolLog">
             <button type="button" class="bghost btn-csv" id="btnCsvLog"></button>
+            <button type="button" class="brd btn-logf" id="btnLogClearFiltered"></button>
             <button type="button" class="brd btn-logclr" id="btnLogClear"></button>
           </div>
           <div class="log-below" id="logBelowBlock">
@@ -195,24 +199,6 @@
         </div>
       </div>
     </main>
-
-    <div
-      class="mod"
-      id="printModal"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="mQ"
-      hidden
-    >
-      <div class="modb" data-close=""></div>
-      <div class="modc">
-        <p class="mqt" id="mQ"></p>
-        <div class="mrow">
-          <button type="button" class="bghost" id="mNo"></button>
-          <button type="button" class="bpri" id="mYes"></button>
-        </div>
-      </div>
-    </div>
 
     <footer class="tfut">
       <a href="index.html" class="a tfut-link" id="linkToBoard"></a>

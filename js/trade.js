@@ -402,6 +402,8 @@ function setText(id, t) {
 function setDeal(on) {
   var b = document.getElementById("btnDeal");
   if (b) b.disabled = !on;
+  var p = document.getElementById("btnPrintLast");
+  if (p) p.disabled = !on;
 }
 
 function loadLogFromStorage() {
@@ -524,6 +526,32 @@ function getFilteredRows() {
     if (to && y > to) return false;
     return true;
   });
+}
+
+function clearFilteredLog() {
+  var t = getI18n();
+  var filtered = getFilteredRows();
+  if (!filtered.length) {
+    if (t) window.alert(t.tradeLogFilteredEmpty || "");
+    return;
+  }
+  var n = filtered.length;
+  var msg =
+    t && t.tradeConfirmClearFiltered
+      ? String(t.tradeConfirmClearFiltered).replace(/\{n\}/g, String(n))
+      : "Delete " + n + " line(s) that match the current date filter? This cannot be undone.";
+  if (!window.confirm(msg)) return;
+  var idSet = {};
+  var j;
+  for (j = 0; j < filtered.length; j++) {
+    idSet[filtered[j].id] = true;
+  }
+  var pack = loadLog();
+  var kept = pack.rows.filter(function (r) {
+    return !idSet[r.id];
+  });
+  saveLog(kept);
+  renderLogTable();
 }
 
 function findRowById(id) {
@@ -713,6 +741,9 @@ function applyAfterPrintCleanup(ctx) {
   if (ctx === "log") {
     document.body.className = "trade-app trade-mode-log me2-locale-en";
     setTab("log");
+  } else if (ctx === "printlast") {
+    document.body.className = "trade-app me2-locale-en";
+    setTab("calc");
   } else {
     document.body.className = "trade-app me2-locale-en";
     setTab("calc");
@@ -902,6 +933,27 @@ function onPrintRow(ev) {
   }
 }
 
+/** Print receipt for current form (same as a DEAL line) without saving to the log. */
+function onPrintLastLog() {
+  recompute();
+  var s = window.__me2LastSnap;
+  if (!s || !s.valid) return;
+  var r = {
+    id: "preview",
+    t: Date.now(),
+    cCode: s.cCode,
+    isBuy: s.isBuy,
+    inVuv: false,
+    x: s.x,
+    rate: s.rate,
+    base: s.base,
+    legC: s.legC,
+    legS: s.legS,
+    dV: s.dV,
+  };
+  openReceiptPrintWindow(r, "printlast");
+}
+
 function exportCsv() {
   var t = getI18n();
   if (!t) return;
@@ -1064,36 +1116,10 @@ function onDeal() {
   };
   pack.rows.push(row);
   saveLog(pack.rows);
-  window.__me2LastDealRow = row;
-  var t0 = getI18n();
-  if (t0) {
-    setText("mQ", t0.tradeAfterPrintQ);
-    setText("mYes", t0.tradePrintNow);
-    setText("mNo", t0.tradePrintLater);
-  }
-  var mod = document.getElementById("printModal");
-  if (mod) {
-    mod.hidden = false;
-  }
-}
-
-function closeModal() {
-  var mod = document.getElementById("printModal");
-  if (mod) mod.hidden = true;
-}
-
-function doPrintReceipt() {
-  var r = window.__me2LastDealRow;
-  if (!r) {
-    closeModal();
-    return;
-  }
-  closeModal();
-  openReceiptPrintWindow(r, "deal");
+  afterPrintChoiceNo();
 }
 
 function afterPrintChoiceNo() {
-  closeModal();
   var am = document.getElementById("amt");
   if (am) am.value = "";
   recompute();
@@ -1185,8 +1211,12 @@ function applyLabels() {
   setText("thGlobalSell", t.tradeGlobalThSell);
   setText("btnClear", t.tradeClear);
   setText("btnDeal", t.tradeDeal);
+  if (t.tradePrint) setText("btnPrintLast", t.tradePrint);
   if (t.tradeDeal && document.getElementById("btnDeal")) {
     document.getElementById("btnDeal").setAttribute("title", t.tradeDeal);
+  }
+  if (t.tradePrint && document.getElementById("btnPrintLast")) {
+    document.getElementById("btnPrintLast").setAttribute("title", t.tradePrint);
   }
   setText("logH", t.tradeAllTx);
   setText("logFilterDateNote", t.tradeFilterDatesNote);
@@ -1209,13 +1239,9 @@ function applyLabels() {
   setText("logEmpty", t.tradeLogEmpty);
   setText("btnCsvLog", t.tradeExportLogCsv);
   setText("btnCsvSummary", t.tradeExportSummaryCsv);
+  if (t.tradeClearFiltered) setText("btnLogClearFiltered", t.tradeClearFiltered);
   setText("btnLogClear", t.tradeClearAllLog);
   setText("linkToBoard", t.tradeBackToBoard || "Back to rate board");
-  if (t.tradeAfterPrintQ) {
-    setText("mQ", t.tradeAfterPrintQ);
-    setText("mYes", t.tradePrintNow);
-    setText("mNo", t.tradePrintLater);
-  }
   clearInlineStatus();
   return true;
 }
@@ -1263,15 +1289,14 @@ function main() {
   document.getElementById("dirBuy").addEventListener("change", recompute);
   document.getElementById("dirSell").addEventListener("change", recompute);
   document.getElementById("btnDeal").addEventListener("click", onDeal);
-  document.getElementById("mYes").addEventListener("click", doPrintReceipt);
-  document.getElementById("mNo").addEventListener("click", afterPrintChoiceNo);
-  document.getElementById("printModal").addEventListener("click", function (e) {
-    if (e.target.getAttribute("data-close") != null) afterPrintChoiceNo();
-  });
+  var bpl = document.getElementById("btnPrintLast");
+  if (bpl) bpl.addEventListener("click", onPrintLastLog);
   var bLog = document.getElementById("btnCsvLog");
   if (bLog) bLog.addEventListener("click", exportCsv);
   var bSum = document.getElementById("btnCsvSummary");
   if (bSum) bSum.addEventListener("click", exportSummaryCsv);
+  var bcf = document.getElementById("btnLogClearFiltered");
+  if (bcf) bcf.addEventListener("click", clearFilteredLog);
   document.getElementById("btnLogClear").addEventListener("click", function () {
     var tc = getI18n();
     if (tc && !window.confirm(tc.tradeConfirmClear)) return;

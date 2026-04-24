@@ -321,9 +321,18 @@ body.trade-mode-rates .ttabs {
 .sheet--calc {
   justify-content: flex-start;
 }
-.sheet--calc .bdeal {
+.sheet--calc .deal-row {
   margin-top: 0.1rem;
   flex: 0 0 auto;
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  gap: 0.35rem;
+  width: 100%;
+}
+.sheet--calc .deal-row .bdeal,
+.sheet--calc .deal-row .bprint-last {
+  margin-top: 0;
 }
 .sheet--calc .sum {
   flex: 0 0 auto;
@@ -470,9 +479,11 @@ body.trade-mode-rates .ttabs {
   font-family: var(--ff);
   word-break: break-all;
 }
-/* DEAL */
+/* DEAL + print last (same row) */
 .bdeal {
-  width: 100%;
+  flex: 1 1 0;
+  min-width: 0;
+  width: auto;
   font: inherit;
   font-size: 1.12em;
   font-weight: 900;
@@ -486,6 +497,33 @@ body.trade-mode-rates .ttabs {
   cursor: pointer;
   margin-top: 0.1rem;
   box-shadow: 0 1px 0 rgba(255, 255, 255, 0.3) inset;
+}
+.bprint-last {
+  flex: 1 1 0;
+  min-width: 0;
+  font: inherit;
+  font-size: 1.02em;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  padding: 0.55rem 0.5rem;
+  min-height: 3.1rem;
+  border: 1px solid rgba(240, 200, 74, 0.5);
+  border-radius: 8px;
+  color: #f6e8a8;
+  background: rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  margin-top: 0.1rem;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06) inset;
+  -webkit-tap-highlight-color: transparent;
+}
+.bprint-last:hover:not(:disabled) {
+  background: rgba(0, 0, 0, 0.45);
+  border-color: #c9a224;
+  color: #fff8d8;
+}
+.bprint-last:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
 }
 .bdeal:disabled {
   opacity: 0.4;
@@ -574,6 +612,15 @@ body.trade-mode-rates .ttabs {
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 6px;
   background: #f6fcf8;
+  box-sizing: border-box;
+}
+/* History: main log table and summary share one width/column */
+.logbox > .lscroll {
+  max-width: min(100%, 58rem);
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  align-self: center;
 }
 .tlog {
   width: 100%;
@@ -645,7 +692,9 @@ body.trade-mode-rates .ttabs {
   width: 100%;
   max-width: min(100%, 58rem);
   box-sizing: border-box;
-  align-self: stretch;
+  align-self: center;
+  margin-left: auto;
+  margin-right: auto;
 }
 .log-sec-ttl {
   margin: 0;
@@ -673,28 +722,25 @@ body.trade-mode-rates .ttabs {
   width: 100%;
   max-width: min(100%, 58rem);
   box-sizing: border-box;
-  align-self: stretch;
+  align-self: center;
+  margin-left: auto;
+  margin-right: auto;
   display: flex;
   flex-direction: column;
   gap: 0.3rem;
 }
-.log-tool--log {
-  flex-direction: row;
-  flex-wrap: wrap;
-  align-items: stretch;
-  gap: 0.3rem 0.35rem;
-}
+.log-tool--log,
 .log-tool--sum {
-  flex-direction: row;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   align-items: stretch;
   gap: 0.3rem 0.35rem;
 }
 .log-tool--log .btn-csv,
-.log-tool--log .btn-logclr {
-  flex: 1 1 42%;
+.log-tool--log .btn-logclr,
+.log-tool--log .btn-logf {
   min-width: 0;
-  width: auto;
+  width: 100%;
   box-sizing: border-box;
   padding: 0.48rem 0.45rem;
   font-size: 0.74rem;
@@ -702,8 +748,10 @@ body.trade-mode-rates .ttabs {
   border-radius: 6px;
   cursor: pointer;
 }
+/* Same cell width/position as Export log (col 1) */
 .log-tool--sum .btn-csv {
-  flex: 1 1 100%;
+  grid-column: 1;
+  justify-self: stretch;
   min-width: 0;
   width: 100%;
   box-sizing: border-box;
@@ -730,57 +778,6 @@ body.trade-mode-rates .ttabs {
   font-size: 0.72rem;
   padding: 0.3rem 0.2rem;
   margin: 0;
-}
-/* 弹层 */
-.mod {
-  position: fixed;
-  inset: 0;
-  z-index: 200;
-  display: grid;
-  place-items: center;
-  background: rgba(0, 0, 0, 0.45);
-}
-.mod[hidden] {
-  display: none !important;
-}
-.modb {
-  position: absolute;
-  inset: 0;
-}
-.modc {
-  position: relative;
-  background: #0f2e26;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 12px;
-  padding: 0.6rem 0.75rem 0.5rem;
-  max-width: 20rem;
-  width: 92%;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
-  text-align: center;
-}
-.mqt {
-  margin: 0 0 0.45rem;
-  color: #e0f0e8;
-  font-size: 0.88rem;
-  font-weight: 700;
-  line-height: 1.3;
-}
-.mrow {
-  display: flex;
-  justify-content: center;
-  gap: 0.35rem;
-  flex-wrap: wrap;
-}
-.bpri {
-  font: inherit;
-  font-weight: 800;
-  font-size: 0.85rem;
-  padding: 0.3rem 0.55rem;
-  border-radius: 6px;
-  border: 1px solid #b89220;
-  background: linear-gradient(180deg, #f6e08a, #d4a62a);
-  color: #1a1303;
-  cursor: pointer;
 }
 /* 页脚 */
 .tfut {

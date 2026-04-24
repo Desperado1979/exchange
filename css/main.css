@@ -32,6 +32,7 @@ html.view-signage-root {
   font-size: 200%;
 }
 
+/* One-screen layout: the document does not scroll; only the currency tbody in .list-view scrolls. */
 body.view-signage {
   margin: 0;
   font-family: var(--font);
@@ -92,6 +93,11 @@ body.view-signage {
   z-index: 2;
 }
 
+.header-bar__tools--left {
+  right: auto;
+  left: 0.15rem;
+}
+
 .fs-btn {
   display: flex;
   flex-direction: row;
@@ -112,6 +118,13 @@ body.view-signage {
   background: rgba(0, 0, 0, 0.32);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
+}
+a.fs-btn {
+  text-decoration: none;
+  color: inherit;
+}
+a.fs-btn:visited {
+  color: #fff8e0;
 }
 .fs-btn:hover {
   background: rgba(0, 0, 0, 0.45);
@@ -134,7 +147,8 @@ body.view-signage {
   width: 100%;
   max-width: none;
   text-align: center;
-  padding: 0 4.2rem 0 0.5rem;
+  /* Symmetric side padding so the title stays visually centered (fs button is position:absolute on the right). */
+  padding: 0 4.2rem;
   box-sizing: border-box;
 }
 
@@ -166,7 +180,27 @@ body.view-signage {
   line-height: 1.15;
 }
 
-/* Footer: brand + subtitle + TEL ù large type for TV / signage distance */
+/* Top bar: "All rates (VUV)" (replaces former brand line in the header) */
+.view-signage .list-title--site {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  text-align: center;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+.view-signage .list-title--site .one-line {
+  justify-content: center;
+  line-height: 1.15;
+  width: 100%;
+}
+.view-signage .list-title--site .ol-en {
+  font-size: clamp(0.85rem, 2.4vmin, 1.75rem) !important;
+  font-weight: 800 !important;
+}
+
+/* Footer: brand + subtitle + TEL ? large type for TV / signage distance */
 .view-signage .site-footer .footer-text,
 .view-signage .site-footer .footer-text .dual {
   color: var(--text);
@@ -202,10 +236,9 @@ body.view-signage {
 
 @media (prefers-reduced-motion: reduce) {
   body.view-signage {
-    max-height: none;
-    height: auto;
-    min-height: 100dvh;
-    overflow: auto;
+    max-height: 100dvh;
+    height: 100dvh;
+    overflow: hidden;
   }
 }
 
@@ -226,7 +259,7 @@ body.view-signage {
   line-height: 1.15;
 }
 
-/* Main: eats all space between top and footer */
+/* Main fills space between top bar and footer; no page scroll. */
 .board {
   flex: 1 1 0;
   min-height: 0;
@@ -240,10 +273,15 @@ body.view-signage {
   overflow: hidden;
 }
 
-/* Hero: tight vertical footprint so list has more room; font size unchanged */
+/* Hero: tall pair cards; list-wrap remains flex:1 below */
 .hero {
   flex: 0 0 auto;
   text-align: center;
+  min-height: clamp(3.4rem, min(32dvh, 9rem), 8rem);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: clamp(0.12rem, 0.85dvh, 0.32rem) 0;
 }
 
 .hero-panels {
@@ -256,23 +294,17 @@ body.view-signage {
   .hero-panels {
     grid-template-columns: 1fr;
   }
-  body.view-signage {
-    max-height: none;
-    height: auto;
-    min-height: 100dvh;
-    overflow: auto;
-  }
 }
 
 .hero-card {
   background: var(--bg-elev);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: var(--radius);
-  padding: clamp(0.2rem, 0.5dvh, 0.32rem) clamp(0.3rem, 0.8dvw, 0.5rem);
+  padding: clamp(0.42rem, 1.15dvh, 0.72rem) clamp(0.3rem, 0.8dvw, 0.5rem);
   box-shadow: var(--shadow);
   display: flex;
   flex-direction: column;
-  min-height: 0;
+  min-height: clamp(2.4rem, min(24dvh, 6.5rem), 5.5rem);
 }
 
 /* ????????????????????+ ??????? */
@@ -399,55 +431,112 @@ body.view-signage {
   line-height: 1.05;
 }
 
-/* List block: fills space below hero; ?????+?????????? */
+/* List: CCY/We buy/We sell is OUTSIDE the white card; only the tbody list scrolls inside .list-view. */
 .list-wrap {
   flex: 1 1 0;
   min-height: 0;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: stretch;
-  overflow: auto;
-  padding: 0.15rem 0;
+  overflow: hidden;
+  padding: 0.1rem 0 0.15rem;
+  gap: clamp(0.12rem, 0.35dvh, 0.2rem);
 }
 
-/* List area title */
-.view-signage .list-title {
+/* Column title strip: not inside list-shell, does not scroll with the currency list */
+.list-table-head {
   flex: 0 0 auto;
-  margin: 0 0 0.3rem;
-  font-size: clamp(0.72rem, 1.05dvh, 0.9rem);
-  line-height: 1.2;
-  font-weight: 800;
-  color: var(--text);
-  opacity: 1;
-  text-align: center;
-  text-shadow: 0 0.05em 0.1em rgba(0, 0, 0, 0.35);
+  width: 100%;
+  z-index: 1;
 }
-.view-signage .list-title .one-line {
-  justify-content: center;
+.list-table-head .table-rail--head {
+  padding: 0 clamp(0.2rem, 0.5dvw, 0.4rem);
 }
 
+/* White card: only wraps the data rows (scrolls internally) */
 .list-shell {
-  flex: 0 1 auto;
+  flex: 1 1 0;
   min-height: 0;
   max-width: 100%;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: stretch;
   background: var(--card);
   color: var(--card-ink);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   border: 1px solid var(--line);
   overflow: hidden;
-  padding: clamp(0.25rem, 0.6dvh, 0.5rem) clamp(0.2rem, 0.5dvw, 0.4rem);
+  padding: 0;
+}
+.list-shell .list-view {
+  padding-left: 0;
+  padding-right: 0;
+  min-height: 0;
+}
+.list-view .table-rail--body {
+  padding: 0 clamp(0.2rem, 0.5dvw, 0.4rem) clamp(0.2rem, 0.5dvh, 0.35rem);
+}
+
+.table-rail--head,
+.table-rail--body {
+  width: 100%;
+  max-width: min(100%, 40rem);
+  margin-left: auto;
+  margin-right: auto;
+  box-sizing: border-box;
+}
+
+.rt-col-pair {
+  width: 34%;
+}
+.rt-col-buy {
+  width: 33%;
+}
+.rt-col-sell {
+  width: 33%;
+}
+
+.rate-table--head,
+.rate-table--body {
+  table-layout: fixed;
+  width: 100%;
+  border-collapse: collapse;
+  font-size: clamp(0.8rem, 1.2dvh, 1.05rem);
+  font-weight: 800;
+}
+
+.rate-table--head thead th {
+  text-align: center;
+  padding: 0.35rem 0.5rem;
+  background: #dce8e1;
+  color: var(--card-ink);
+  font-weight: 800;
+  font-size: clamp(0.7rem, 0.95dvh, 0.85rem);
+  /* Must win over the generic .rate-table thead th { position: sticky } rule below. */
+  position: static !important;
+  top: auto !important;
+  z-index: auto;
+  border-bottom: 2px solid #9fb3a8;
+  vertical-align: top;
+  line-height: 1.15;
+}
+
+.rate-table--head thead th .one-line {
+  justify-content: center;
+  font-size: 1em;
+  line-height: 1.15;
+}
+.rate-table--head thead th .ol-en {
+  font-size: 0.9em;
+  opacity: 0.9;
 }
 
 .list-view {
-  flex: 0 0 auto;
+  flex: 1 1 0;
   min-height: 0;
   max-width: 100%;
-  max-height: none;
   overflow-y: auto;
   overflow-x: auto;
   scrollbar-width: none;
@@ -456,8 +545,8 @@ body.view-signage {
   -webkit-overflow-scrolling: touch;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  align-items: stretch;
+  justify-content: flex-start;
   width: 100%;
 }
 .list-view::-webkit-scrollbar {
@@ -519,6 +608,9 @@ body.view-signage {
   vertical-align: middle;
   text-align: center;
   border-bottom: 1px solid #e8f0ec;
+}
+.rate-table tbody td {
+  min-height: 2.4em;
 }
 
 .rate-table tr:last-child td {
@@ -646,22 +738,6 @@ body.view-signage {
 .view-signage .footer-text .d-en::before {
   content: " ";
 }
-.footer-to-trade {
-  display: block;
-  margin: 0.35rem auto 0;
-  max-width: 100%;
-  text-align: center;
-  font-size: clamp(0.75rem, 2.6vmin, 1.35rem);
-  line-height: 1.25;
-  color: #d4f5e8;
-  text-decoration: none;
-  font-weight: 800;
-}
-.footer-to-trade:hover,
-.footer-to-trade:focus-visible {
-  color: #f0e8a8;
-  text-decoration: underline;
-}
 
 /* Signage: default 700; ????????????/???? */
 body.view-signage,
@@ -680,12 +756,15 @@ body.view-signage .list-wrap .cell-stack {
 body.view-signage .list-wrap .cc,
 body.view-signage .list-wrap .num,
 body.view-signage .list-wrap .frac,
-body.view-signage .list-title,
-body.view-signage .list-title * {
+body.view-signage .list-title--site,
+body.view-signage .list-title--site * {
   font-weight: 900 !important;
 }
 
 @media (max-width: 540px) {
+  .list-table-head {
+    display: none;
+  }
   .rate-table thead {
     display: none;
   }
